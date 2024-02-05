@@ -9,3 +9,22 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id               Int    @id @default(autoincrement())
+  first_name       String
+  last_name        String
+  display_name     String
+  birthdate        String
+  delivery_address String
+  phone_number     String
+  Auth             Auth?
+}
+
+model Auth {
+  id       Int    @id @default(autoincrement())
+  email    String @unique
+  password String
+  user     User   @relation(fields: [userId], references: [id])
+  userId   Int    @unique
+}
