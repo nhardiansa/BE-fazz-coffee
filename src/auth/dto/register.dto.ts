@@ -10,6 +10,9 @@ export class RegisterDto extends LoginDto {
   password: string;
 
   @IsNotEmpty({ message: 'Phone number must be filled' })
-  @IsPhoneNumber('ID', { message: 'Phone number invalid' })
-  phone_number: string;
+  @IsPhoneNumber('ID', {
+    message:
+      'Invalid phone number. Please use a valid format, for example: +123456789',
+  })
+  phoneNumber: string;
 }

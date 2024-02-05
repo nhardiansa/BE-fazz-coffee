@@ -1,21 +1,22 @@
 import { IsNotEmpty, IsPhoneNumber, IsString } from 'class-validator';
+import { RegisterDto } from 'src/auth/dto/register.dto';
 
-export class CreateUserDto {
+export class CreateUserDto extends RegisterDto {
   @IsString()
-  firstName: string;
+  firstName?: string;
 
   @IsString()
-  lastName: string;
+  lastName?: string;
 
   @IsNotEmpty()
   @IsString()
-  displayName: string;
+  displayName?: string;
 
   @IsString()
-  birthdate: string;
+  birthdate?: string;
 
   @IsString()
-  deliveryAddress: string;
+  deliveryAddress?: string;
 
   @IsString()
   @IsPhoneNumber('ID')
