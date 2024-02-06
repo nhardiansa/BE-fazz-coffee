@@ -8,13 +8,15 @@ datasource db {
 }
 
 model Auth {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique(map: "Auth_email_key")
-  password  String
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-  userId    Int?     @unique(map: "Auth_userId_key") @map("user_id")
-  user      User?    @relation(fields: [userId], references: [id], map: "Auth_userId_fkey")
+  id         Int      @id @default(autoincrement())
+  email      String   @unique(map: "Auth_email_key")
+  password   String
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+  userId     Int?     @unique(map: "Auth_userId_key") @map("user_id")
+  isVerified Boolean? @default(false) @map("is_verified")
+  role       Role?    @default(CUSTOMER)
+  user       User?    @relation(fields: [userId], references: [id], map: "Auth_userId_fkey")
 
   @@map("auths")
 }
@@ -47,4 +49,9 @@ model RefreshToken {
 
   @@index([userId], map: "refresh_tokens_user_id_fkey")
   @@map("refresh_tokens")
+}
+
+enum Role {
+  ADMIN
+  CUSTOMER
 }
