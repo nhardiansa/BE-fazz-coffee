@@ -1,5 +1,5 @@
 import { PrismaService } from 'src/core/services/prisma.service';
-import { RegisterDto } from './dto/register.dto';
+import { RegisterDto } from '../dto/register.dto';
 import { hash } from 'bcrypt';
 
 export class AuthModel {
