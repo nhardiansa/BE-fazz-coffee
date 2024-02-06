@@ -1,4 +1,4 @@
-export class User {
+export class UserEntity {
   id: number;
   email: string;
   firstName: string | null;

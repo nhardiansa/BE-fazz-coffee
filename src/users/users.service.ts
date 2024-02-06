@@ -1,29 +1,27 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { PrismaService } from 'src/core/services/prisma.service';
-import { User } from './entities/user.entity';
+import { UserEntity } from './entities/user.entity';
+import { UsersModel } from './users.model';
+import { AuthModel } from 'src/auth/auth.model';
 import { hash } from 'bcrypt';
 
 @Injectable()
 export class UsersService {
-  private prisma: PrismaService;
-
-  constructor(prisma: PrismaService) {
-    this.prisma = prisma;
-  }
-
-  async addNewUser(createUserDto: CreateUserDto): Promise<User> {
-    // run checking data
+  async addNewUserAndAuth(createUserDto: CreateUserDto): Promise<UserEntity> {
+    // run checking if email and phone number exist
     await this.checkUniqueData(createUserDto.email, createUserDto.phoneNumber);
 
-    const newUser = await this.prisma.user.create({
+    const userModel = new UsersModel();
+    const authModel = new AuthModel();
+
+    const newUser = await userModel.model.create({
       data: {
         displayName: createUserDto.email,
-        phoneNumber: this.cleanPhoneNumber(createUserDto.phoneNumber),
+        phoneNumber: userModel.cleanPhoneNumber(createUserDto.phoneNumber),
       },
     });
 
-    const newAuthUser = await this.prisma.auth.create({
+    const authUser = await authModel.model.create({
       data: {
         email: createUserDto.email,
         password: await hash(createUserDto.password, 8),
@@ -32,15 +30,8 @@ export class UsersService {
     });
 
     return {
-      id: newUser.id,
-      email: newAuthUser.email,
-      firstName: newUser.firstName,
-      lastName: newUser.lastName,
-      displayName: newUser.displayName,
-      birthdate: newUser.birthdate,
-      deliveryAddress: newUser.deliveryAddress,
-      phoneNumber: newUser.phoneNumber,
-      profileImage: newUser.profileImage,
+      ...newUser,
+      email: authUser.email,
       createdAt: newUser.createdAt.toISOString(),
       updatedAt: newUser.updatedAt.toISOString(),
     };
@@ -50,15 +41,12 @@ export class UsersService {
     email: CreateUserDto['email'],
     phoneNumber: CreateUserDto['phoneNumber'],
   ) {
-    const existingEmail = await this.prisma.auth.findFirst({
-      where: { email: email },
-    });
+    const userModel = new UsersModel();
+    const authModel = new AuthModel();
 
-    const existingPhoneNumber = await this.prisma.user.findFirst({
-      where: {
-        phoneNumber: this.cleanPhoneNumber(phoneNumber),
-      },
-    });
+    const existingEmail = await authModel.findByEmail(email);
+
+    const existingPhoneNumber = await userModel.findByPhoneNumber(phoneNumber);
 
     if (existingPhoneNumber) {
       throw new HttpException(
@@ -70,10 +58,5 @@ export class UsersService {
     if (existingEmail) {
       throw new HttpException('Email already taken', HttpStatus.BAD_REQUEST);
     }
-  }
-
-  cleanPhoneNumber(phoneNumber: CreateUserDto['phoneNumber']): string {
-    const cleanPhoneNumber = phoneNumber.replace(/\D/g, '');
-    return cleanPhoneNumber;
   }
 }
