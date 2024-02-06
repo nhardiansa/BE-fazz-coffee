@@ -24,11 +24,9 @@ export class AuthService {
   async login(loginData: LoginDto): Promise<LoginEntity> {
     const authModel = new AuthModel().model;
 
-    const authUser = await authModel.findFirst({
+    const authUser = await authModel.findFirstOrThrow({
       where: { email: loginData.email },
     });
-
-    console.log(loginData.password, authUser.password);
 
     const authenticated = await compare(loginData.password, authUser.password);
 

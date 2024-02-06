@@ -7,7 +7,6 @@ export interface ErrorResponse extends BaseResponse {
   error: any;
 }
 
-export interface SuccessResponse<T, P = object> extends BaseResponse {
+export interface SuccessResponse<T> extends BaseResponse {
   result?: T;
-  pagination?: P;
 }

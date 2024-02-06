@@ -9,17 +9,26 @@ import {
 } from '@nestjs/common';
 import { Observable, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
-
-export interface CustomErrorException {
-  message: string;
-  statusCode: number;
-}
+import { SuccessResponse } from './base-response';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 @Injectable()
-export class ResponseInterceptor implements NestInterceptor {
-  intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
+export class ResponseInterceptor<T>
+  implements NestInterceptor<T, SuccessResponse<T>>
+{
+  intercept(
+    context: ExecutionContext,
+    next: CallHandler,
+  ): Observable<SuccessResponse<T>> {
     return next.handle().pipe(
-      map((res: unknown) => this.responseHandler(res)),
+      map((data: SuccessResponse<T>) => {
+        console.log(data);
+        return this.responseHandler({
+          success: true,
+          message: data.message,
+          result: data.result,
+        });
+      }),
       catchError((err: HttpException) =>
         throwError(() => this.errorHandler(err, context)),
       ),
@@ -29,7 +38,7 @@ export class ResponseInterceptor implements NestInterceptor {
   errorHandler(exception: HttpException, context: ExecutionContext) {
     const ctx = context.switchToHttp();
     const response = ctx.getResponse();
-    const statusCode =
+    let statusCode =
       exception instanceof HttpException
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
@@ -37,13 +46,21 @@ export class ResponseInterceptor implements NestInterceptor {
     let errorMessage =
       "Oops, something's not right. Our team is on it. Please hold tight and try again in a moment.";
 
-    console.error(exception);
+    console.error('RESPONSE INTERCEPTOR', exception);
+
+    if (exception instanceof PrismaClientKnownRequestError) {
+      if (exception.code === 'P2025') {
+        statusCode = HttpStatus.NOT_FOUND;
+        errorMessage = 'Data not found';
+      }
+    }
 
     if (exception instanceof HttpException) {
-      errorMessage = exception.getResponse().toString();
+      errorMessage = exception.message;
     }
 
     if (exception instanceof BadRequestException) {
+      statusCode = HttpStatus.BAD_REQUEST;
       errorMessage = exception.getResponse()['message'][0];
     }
 
