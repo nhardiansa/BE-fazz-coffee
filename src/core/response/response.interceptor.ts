@@ -22,7 +22,6 @@ export class ResponseInterceptor<T>
   ): Observable<SuccessResponse<T>> {
     return next.handle().pipe(
       map((data: SuccessResponse<T>) => {
-        console.log(data);
         return this.responseHandler({
           success: true,
           message: data.message,
