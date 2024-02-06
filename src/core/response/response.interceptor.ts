@@ -37,12 +37,14 @@ export class ResponseInterceptor implements NestInterceptor {
     let errorMessage =
       "Oops, something's not right. Our team is on it. Please hold tight and try again in a moment.";
 
-    if (exception instanceof BadRequestException) {
-      errorMessage = exception.getResponse()['message'][0];
-    }
+    console.log(exception);
 
     if (exception instanceof HttpException) {
       errorMessage = exception.getResponse().toString();
+    }
+
+    if (exception instanceof BadRequestException) {
+      errorMessage = exception.getResponse()['message'][0];
     }
 
     response.status(statusCode).json({
