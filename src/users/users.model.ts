@@ -1,6 +1,6 @@
 import { PrismaService } from 'src/core/services/prisma.service';
 import { RegisterDto } from 'src/auth/dto/register.dto';
-import { AuthModel } from 'src/auth/auth.model';
+import { AuthModel } from 'src/auth/models/auth.model';
 
 export class UsersModel {
   model: PrismaService['user'];
