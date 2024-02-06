@@ -7,30 +7,44 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model auth {
+model Auth {
   id        Int      @id @default(autoincrement())
   email     String   @unique(map: "Auth_email_key")
   password  String
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
   userId    Int?     @unique(map: "Auth_userId_key") @map("user_id")
-  user      user?    @relation(fields: [userId], references: [id], map: "Auth_userId_fkey")
+  user      User?    @relation(fields: [userId], references: [id], map: "Auth_userId_fkey")
 
   @@map("auths")
 }
 
-model user {
-  id              Int      @id @default(autoincrement())
-  firstName       String?  @map("first_name")
-  lastName        String?  @map("last_name")
-  displayName     String?  @map("display_name")
+model User {
+  id              Int            @id @default(autoincrement())
+  firstName       String?        @map("first_name")
+  lastName        String?        @map("last_name")
+  displayName     String?        @map("display_name")
   birthdate       String?
-  deliveryAddress String?  @map("delivery_address")
-  phoneNumber     String?  @map("phone_number")
-  createdAt       DateTime @default(now()) @map("created_at")
-  profileImage    String?  @map("profile_image")
-  updatedAt       DateTime @updatedAt @map("updated_at")
-  auth            auth?
+  deliveryAddress String?        @map("delivery_address")
+  phoneNumber     String?        @map("phone_number")
+  createdAt       DateTime       @default(now()) @map("created_at")
+  profileImage    String?        @map("profile_image")
+  updatedAt       DateTime       @updatedAt @map("updated_at")
+  auth            Auth?
+  RefreshToken    RefreshToken[]
 
   @@map("users")
+}
+
+model RefreshToken {
+  id           Int      @id @default(autoincrement())
+  userId       Int      @map("user_id")
+  refreshToken String   @map("refresh_token")
+  expiresAt    DateTime @map("expires_at")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  user         User     @relation(fields: [userId], references: [id])
+
+  @@index([userId], map: "refresh_tokens_user_id_fkey")
+  @@map("refresh_tokens")
 }
