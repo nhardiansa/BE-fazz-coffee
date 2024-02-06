@@ -15,6 +15,8 @@ model auth {
   updatedAt DateTime @updatedAt @map("updated_at")
   userId    Int?     @unique(map: "Auth_userId_key") @map("user_id")
   user      user?    @relation(fields: [userId], references: [id], map: "Auth_userId_fkey")
+
+  @@map("auths")
 }
 
 model user {
@@ -29,4 +31,6 @@ model user {
   profileImage    String?  @map("profile_image")
   updatedAt       DateTime @updatedAt @map("updated_at")
   auth            auth?
+
+  @@map("users")
 }
