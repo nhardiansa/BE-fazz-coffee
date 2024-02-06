@@ -5,6 +5,7 @@ import { LoginDto } from './dto/login.dto';
 import { SuccessResponse } from 'src/core/response/base-response';
 import { UserEntity } from 'src/users/entities/user.entity';
 import { LoginEntity } from './entities/login.entity';
+import { RefreshAccessTokenDto } from './dto/refresh-access-token.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -22,6 +23,7 @@ export class AuthController {
       result: user,
     };
   }
+
   @Post('login')
   async login(
     @Body() loginDto: LoginDto,
@@ -31,6 +33,21 @@ export class AuthController {
       success: true,
       message: 'Login success',
       result: result,
+    };
+  }
+
+  @Post('refresh-access-token')
+  async refreshAccessToken(
+    @Body() refreshAccessTokenDto: RefreshAccessTokenDto,
+  ): Promise<SuccessResponse<LoginEntity>> {
+    const result = await this.authService.renewAccessToken(
+      refreshAccessTokenDto.refreshToken,
+    );
+
+    return {
+      success: true,
+      message: 'Generate new access token success',
+      result,
     };
   }
 }
