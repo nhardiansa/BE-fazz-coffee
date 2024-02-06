@@ -19,6 +19,7 @@ export class UsersService {
     const newUser = await this.prisma.user.create({
       data: {
         displayName: createUserDto.email,
+        phoneNumber: this.cleanPhoneNumber(createUserDto.phoneNumber),
       },
     });
 
@@ -55,7 +56,7 @@ export class UsersService {
 
     const existingPhoneNumber = await this.prisma.user.findFirst({
       where: {
-        phoneNumber: phoneNumber,
+        phoneNumber: this.cleanPhoneNumber(phoneNumber),
       },
     });
 
@@ -69,5 +70,10 @@ export class UsersService {
     if (existingEmail) {
       throw new HttpException('Email already taken', HttpStatus.BAD_REQUEST);
     }
+  }
+
+  cleanPhoneNumber(phoneNumber: CreateUserDto['phoneNumber']): string {
+    const cleanPhoneNumber = phoneNumber.replace(/\D/g, '');
+    return cleanPhoneNumber;
   }
 }
