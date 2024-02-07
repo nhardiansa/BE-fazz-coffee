@@ -45,7 +45,7 @@ export class ResponseInterceptor<T>
     let errorMessage =
       "Oops, something's not right. Our team is on it. Please hold tight and try again in a moment.";
 
-    console.error('RESPONSE INTERCEPTOR', exception);
+    // console.error('RESPONSE INTERCEPTOR', exception);
 
     if (exception instanceof PrismaClientKnownRequestError) {
       if (exception.code === 'P2025') {
