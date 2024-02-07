@@ -5,6 +5,7 @@ import { CoreModule } from './core/services/core.service';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
+import { MailerModule } from './core/mailer/mailer.module';
 @Module({
   imports: [
     CoreModule,
@@ -15,6 +16,7 @@ import { JwtModule } from '@nestjs/jwt';
       global: true,
       secret: process.env.SECRET_KEY,
     }),
+    MailerModule,
   ],
   controllers: [AppController],
   providers: [AppService],
