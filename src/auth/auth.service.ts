@@ -7,7 +7,7 @@ import { compare } from 'bcrypt';
 import { UserEntity } from 'src/users/entities/user.entity';
 import { AuthModel } from './models/auth.model';
 import { JwtService } from '@nestjs/jwt';
-import { RefreshToken as RefreshTokenModel } from './models/refreshToken.model';
+import { RefreshToken as RefreshTokenModel } from './models/refresh-token.model';
 
 @Injectable()
 export class AuthService {
