@@ -22,18 +22,19 @@ model Auth {
 }
 
 model User {
-  id              Int            @id @default(autoincrement())
-  firstName       String?        @map("first_name")
-  lastName        String?        @map("last_name")
-  displayName     String?        @map("display_name")
-  birthdate       String?
-  deliveryAddress String?        @map("delivery_address")
-  phoneNumber     String?        @map("phone_number")
-  createdAt       DateTime       @default(now()) @map("created_at")
-  profileImage    String?        @map("profile_image")
-  updatedAt       DateTime       @updatedAt @map("updated_at")
-  auth            Auth?
-  RefreshToken    RefreshToken[]
+  id                 Int                @id @default(autoincrement())
+  firstName          String?            @map("first_name")
+  lastName           String?            @map("last_name")
+  displayName        String?            @map("display_name")
+  birthdate          String?
+  deliveryAddress    String?            @map("delivery_address")
+  phoneNumber        String?            @map("phone_number")
+  createdAt          DateTime           @default(now()) @map("created_at")
+  profileImage       String?            @map("profile_image")
+  updatedAt          DateTime           @updatedAt @map("updated_at")
+  auth               Auth?
+  RefreshToken       RefreshToken[]
+  ResetPasswordToken VerifyResetToken[]
 
   @@map("users")
 }
@@ -54,4 +55,22 @@ model RefreshToken {
 enum Role {
   ADMIN
   CUSTOMER
+}
+
+model VerifyResetToken {
+  id        Int       @id @default(autoincrement())
+  userId    Int?      @map("user_id")
+  user      User?     @relation(fields: [userId], references: [id])
+  token     String
+  tokenType TokenType @map("token_type")
+  expiredAt DateTime  @map("expired_at")
+  createdAt DateTime? @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+
+  @@map("verify_reset_tokens")
+}
+
+enum TokenType {
+  VERIFY
+  RESET
 }
