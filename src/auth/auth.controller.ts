@@ -56,10 +56,12 @@ export class AuthController {
   async requestVerifyReset(
     @Body() requestVerifyResetDto: RequestVerifyResetDto,
   ): Promise<BaseResponse> {
-    await this.authService.requestVerifyResetPassword(requestVerifyResetDto);
+    const message = await this.authService.requestVerifyResetPassword(
+      requestVerifyResetDto,
+    );
     return {
       success: true,
-      message: '',
+      message,
     };
   }
 }

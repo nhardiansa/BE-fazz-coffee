@@ -148,7 +148,7 @@ export class AuthService {
 
   async requestVerifyResetPassword(
     requestVerifyResetDto: RequestVerifyResetDto,
-  ): Promise<boolean> {
+  ): Promise<string> {
     const { email: emailData, requestType } = requestVerifyResetDto;
     const authModel = new AuthModel();
     const usersModel = new UsersModel();
@@ -200,6 +200,10 @@ export class AuthService {
 
     console.log(token);
 
-    return true;
+    if (requestType === 'reset_password') {
+      return 'Please check your email inbox for reset password instructions.';
+    } else {
+      return 'Please check your email inbox for verification instructions.';
+    }
   }
 }
