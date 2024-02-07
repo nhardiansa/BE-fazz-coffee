@@ -13,10 +13,15 @@ import { UsersModel } from 'src/users/users.model';
 import { VerifyResetToken } from './models/verify-refresh-token.model';
 import { VerifyAccountDto } from './dto/verify-account.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { EMAIL_TEMPLATE } from 'src/core/mailer/template';
+import { MailerService } from 'src/core/mailer/mailer.service';
 
 @Injectable()
 export class AuthService {
-  constructor(private jwtService: JwtService) {}
+  constructor(
+    private jwtService: JwtService,
+    private readonly mailerService: MailerService,
+  ) {}
 
   async register(registerData: RegisterDto): Promise<UserEntity> {
     const usersService = new UsersService();
@@ -200,7 +205,7 @@ export class AuthService {
     }
 
     // set request to VerifyResetTokenModel
-    const token = await verifyResetTokenModel.model.create({
+    const result = await verifyResetTokenModel.model.create({
       data: {
         expiredAt: expirationTime,
         token: Math.floor(Math.random() * 1000000).toString(),
@@ -209,7 +214,25 @@ export class AuthService {
       },
     });
 
-    console.log(token.token);
+    // send toke to email
+    const subject =
+      requestType === 'verify'
+        ? 'Account Verification | Fazz Coffee'
+        : 'Reset Password | Fazz Coffee';
+
+    const buttonText =
+      requestType === 'verify' ? 'Verify Account' : 'Reset Password';
+
+    await this.mailerService.sendMail({
+      to: userAuth.email,
+      from: 'noreply@firebaseapp.com',
+      subject,
+      html: EMAIL_TEMPLATE({
+        buttonText,
+        linkInButton:
+          'http://172.28.211.250:5000/auth/verify-account/' + result.token,
+      }),
+    });
 
     if (requestType === 'reset_password') {
       return 'Please check your email inbox for reset password instructions.';
