@@ -2,10 +2,11 @@ import { Controller, Post, Body, HttpCode } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
-import { SuccessResponse } from 'src/core/response/base-response';
+import { BaseResponse, SuccessResponse } from 'src/core/response/base-response';
 import { UserEntity } from 'src/users/entities/user.entity';
 import { LoginEntity } from './entities/login.entity';
 import { RefreshAccessTokenDto } from './dto/refresh-access-token.dto';
+import { RequestVerifyResetDto } from './dto/verify-reset.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -48,6 +49,17 @@ export class AuthController {
       success: true,
       message: 'Generate new access token success',
       result,
+    };
+  }
+
+  @Post('request-verify-reset')
+  async requestVerifyReset(
+    @Body() requestVerifyResetDto: RequestVerifyResetDto,
+  ): Promise<BaseResponse> {
+    await this.authService.requestVerifyResetPassword(requestVerifyResetDto);
+    return {
+      success: true,
+      message: '',
     };
   }
 }

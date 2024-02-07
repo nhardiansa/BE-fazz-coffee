@@ -8,6 +8,9 @@ import { UserEntity } from 'src/users/entities/user.entity';
 import { AuthModel } from './models/auth.model';
 import { JwtService } from '@nestjs/jwt';
 import { RefreshToken as RefreshTokenModel } from './models/refresh-token.model';
+import { RequestVerifyResetDto } from './dto/verify-reset.dto';
+import { UsersModel } from 'src/users/users.model';
+import { VerifyResetToken } from './models/verify-refresh-token.model';
 
 @Injectable()
 export class AuthService {
@@ -141,5 +144,62 @@ export class AuthService {
       access: await this.createAccessToken(userId),
       refresh: await this.createRefreshToken(userId),
     };
+  }
+
+  async requestVerifyResetPassword(
+    requestVerifyResetDto: RequestVerifyResetDto,
+  ): Promise<boolean> {
+    const { email: emailData, requestType } = requestVerifyResetDto;
+    const authModel = new AuthModel();
+    const usersModel = new UsersModel();
+    const verifyResetTokenModel = new VerifyResetToken();
+
+    // get email and user if it exist
+    const email = await authModel.checkEmailIsExisting(emailData);
+    const user = await usersModel.findUserByEmail(email);
+
+    // set expiration time for token
+    const currentTime = new Date();
+    const expirationTime = new Date();
+    expirationTime.setMinutes(currentTime.getMinutes() + 1);
+
+    const tokenType = requestType === 'reset_password' ? 'RESET' : 'VERIFY';
+
+    // delete same type token from user
+    const oldToken = await verifyResetTokenModel.model.findFirst({
+      where: {
+        tokenType,
+        userId: user.id,
+      },
+    });
+
+    console.log(currentTime, oldToken.expiredAt);
+
+    // check if token not expired yet not delete it but wait until expired to generate again
+    if (currentTime < new Date(oldToken.expiredAt)) {
+      throw new HttpException(
+        'We have already sent the code to your email. Please check it first or wait for one more minute to resend.',
+        HttpStatus.TOO_MANY_REQUESTS,
+      );
+    }
+
+    // delete if old token exist
+    if (oldToken) {
+      await verifyResetTokenModel.model.delete({ where: { id: oldToken.id } });
+    }
+
+    // set request to VerifyResetTokenModel
+    const token = await verifyResetTokenModel.model.create({
+      data: {
+        expiredAt: expirationTime,
+        token: Math.floor(Math.random() * 1000000).toString(),
+        tokenType: tokenType,
+        userId: user.id,
+      },
+    });
+
+    console.log(token);
+
+    return true;
   }
 }
