@@ -10,12 +10,17 @@ export class AuthModel {
     this.model = prismaService.auth;
   }
 
-  async checkEmailIsExisting(email: string) {
-    await this.model.findFirstOrThrow({
+  async checkEmailIsExisting(email: string): Promise<string> {
+    const result = await this.model.findFirstOrThrow({
       where: {
         email: email,
       },
+      select: {
+        email: true,
+      },
     });
+
+    return result.email;
   }
 
   async findByEmail(email: string) {
