@@ -52,22 +52,23 @@ model RefreshToken {
   @@map("refresh_tokens")
 }
 
-enum Role {
-  ADMIN
-  CUSTOMER
-}
-
 model VerifyResetToken {
   id        Int       @id @default(autoincrement())
-  userId    Int?      @map("user_id")
-  user      User?     @relation(fields: [userId], references: [id])
+  userId    Int       @map("user_id")
   token     String
   tokenType TokenType @map("token_type")
   expiredAt DateTime  @map("expired_at")
   createdAt DateTime? @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
+  user      User      @relation(fields: [userId], references: [id])
 
+  @@index([userId], map: "verify_reset_tokens_user_id_fkey")
   @@map("verify_reset_tokens")
+}
+
+enum Role {
+  ADMIN
+  CUSTOMER
 }
 
 enum TokenType {
