@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -48,21 +48,19 @@ model RefreshToken {
   updatedAt    DateTime @updatedAt @map("updated_at")
   user         User     @relation(fields: [userId], references: [id])
 
-  @@index([userId], map: "refresh_tokens_user_id_fkey")
   @@map("refresh_tokens")
 }
 
 model VerifyResetToken {
   id        Int       @id @default(autoincrement())
-  userId    Int       @map("user_id")
+  userId    Int?      @map("user_id")
   token     String
   tokenType TokenType @map("token_type")
   expiredAt DateTime  @map("expired_at")
   createdAt DateTime? @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
-  user      User      @relation(fields: [userId], references: [id])
-
-  @@index([userId], map: "verify_reset_tokens_user_id_fkey")
+  user      User?     @relation(fields: [userId], references: [id])
+  
   @@map("verify_reset_tokens")
 }
 
