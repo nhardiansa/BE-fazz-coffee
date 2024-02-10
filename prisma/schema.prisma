@@ -61,7 +61,7 @@ model VerifyResetToken {
   createdAt DateTime? @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
   user      User?     @relation(fields: [userId], references: [id])
-
+  
   @@map("verify_reset_tokens")
 }
 
