@@ -86,13 +86,24 @@ model Products {
 model ProductSizes {
   id        Int       @id @default(autoincrement())
   productId Int       @map("product_id")
-  name      String
-  slug      String    @unique
   createdAt DateTime? @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
+  sizeId    Int       @map("size_id")
   product   Products  @relation(fields: [productId], references: [id])
+  size      Sizes     @relation(fields: [sizeId], references: [id])
 
   @@map("product_sizes")
+}
+
+model Sizes {
+  id           Int            @id @default(autoincrement())
+  name         String         @unique
+  slug         String         @unique
+  createdAt    DateTime?      @default(now()) @map("created_at")
+  updatedAt    DateTime?      @updatedAt @map("updated_at")
+  ProductSizes ProductSizes[]
+
+  @@map("sizes")
 }
 
 enum Role {
