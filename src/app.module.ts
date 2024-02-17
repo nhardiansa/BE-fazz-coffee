@@ -6,6 +6,7 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { MailerModule } from './core/mailer/mailer.module';
+import { ProductModule } from './product/product.module';
 @Module({
   imports: [
     CoreModule,
@@ -17,6 +18,7 @@ import { MailerModule } from './core/mailer/mailer.module';
       secret: process.env.SECRET_KEY,
     }),
     MailerModule,
+    ProductModule,
   ],
   controllers: [AppController],
   providers: [AppService],
