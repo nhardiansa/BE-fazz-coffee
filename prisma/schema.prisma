@@ -74,8 +74,8 @@ model Products {
   deliveryMethod             DeliveryMethod @map("delivery_method")
   type                       ProductType
   stock                      Int
-  deliveryAvailableTimeStart DateTime       @map("delivery_available_time_start") @db.Time(0)
-  deliveryAvailableTimeEnd   DateTime       @map("delivery_available_time_end") @db.Time(0)
+  deliveryAvailableTimeStart String         @map("delivery_available_time_start")
+  deliveryAvailableTimeEnd   String         @map("delivery_available_time_end")
   createdAt                  DateTime?      @default(now()) @map("created_at")
   updatedAt                  DateTime?      @updatedAt @map("updated_at")
   ProductSizes               ProductSizes[]
