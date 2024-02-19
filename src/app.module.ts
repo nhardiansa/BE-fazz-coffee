@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { MailerModule } from './core/mailer/mailer.module';
 import { ProductModule } from './product/product.module';
+import { CloudinaryModule } from './core/cloudinary/cloudinary.module';
 @Module({
   imports: [
     CoreModule,
@@ -19,6 +20,7 @@ import { ProductModule } from './product/product.module';
     }),
     MailerModule,
     ProductModule,
+    CloudinaryModule,
   ],
   controllers: [AppController],
   providers: [AppService],
