@@ -13,6 +13,7 @@ import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { SuccessResponse } from 'src/core/response/base-response';
+import { ProductEntity } from './entities/product.entity';
 
 @Controller('products')
 export class ProductController {
@@ -20,8 +21,15 @@ export class ProductController {
 
   @Post()
   @UseInterceptors(FileInterceptor('picture'))
-  create(@Body() createProductDto: CreateProductDto) {
-    return this.productService.create(createProductDto);
+  async create(
+    @Body() createProductDto: CreateProductDto,
+  ): Promise<SuccessResponse<ProductEntity>> {
+    const product = await this.productService.create(createProductDto);
+    return {
+      success: true,
+      message: 'Success add product',
+      result: product,
+    };
   }
 
   @Get()
