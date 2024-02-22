@@ -6,8 +6,9 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('Seeding....');
 
+  /*=============== Default Product Size =============== */
   // Regular size
-  const regularSize = await prisma.sizes.upsert({
+  await prisma.sizes.upsert({
     where: { slug: slugify('regular') },
     update: {},
     create: {
@@ -17,7 +18,7 @@ async function main() {
   });
 
   // Large size
-  const largeSize = await prisma.sizes.upsert({
+  await prisma.sizes.upsert({
     where: { slug: slugify('large') },
     update: {},
     create: {
@@ -27,7 +28,7 @@ async function main() {
   });
 
   // Extra Large size
-  const xtraLargeSize = await prisma.sizes.upsert({
+  await prisma.sizes.upsert({
     where: { slug: slugify('extra large') },
     update: {},
     create: {
@@ -36,7 +37,8 @@ async function main() {
     },
   });
 
-  const gr250Size = await prisma.sizes.upsert({
+  // 250gr size
+  await prisma.sizes.upsert({
     where: { slug: slugify('250 gr') },
     update: {},
     create: {
@@ -45,7 +47,8 @@ async function main() {
     },
   });
 
-  const gr300Size = await prisma.sizes.upsert({
+  // 300gr size
+  await prisma.sizes.upsert({
     where: { slug: slugify('300 gr') },
     update: {},
     create: {
@@ -54,7 +57,8 @@ async function main() {
     },
   });
 
-  const gr500Size = await prisma.sizes.upsert({
+  // 500gr size
+  await prisma.sizes.upsert({
     where: { slug: slugify('500 gr') },
     update: {},
     create: {
@@ -63,17 +67,43 @@ async function main() {
     },
   });
 
-  console.log(regularSize);
-  console.log(largeSize);
-  console.log(xtraLargeSize);
-  console.log(gr250Size);
-  console.log(gr300Size);
-  console.log(gr500Size);
+  /*=============== Default Delivery Methods =============== */
+
+  // Home Delivery
+  await prisma.deliveryMethods.upsert({
+    where: { slug: slugify('home delivery') },
+    update: {},
+    create: {
+      name: 'Home Delivery',
+      slug: slugify('home delivery'),
+    },
+  });
+
+  // Dine In
+  await prisma.deliveryMethods.upsert({
+    where: { slug: slugify('dine in') },
+    update: {},
+    create: {
+      name: 'Dine In',
+      slug: slugify('dine in'),
+    },
+  });
+
+  // Take Away
+  await prisma.deliveryMethods.upsert({
+    where: { slug: slugify('take away') },
+    update: {},
+    create: {
+      name: 'Take Away',
+      slug: slugify('take away'),
+    },
+  });
 }
 
 main()
   .then(async () => {
     await prisma.$disconnect();
+    console.log('Database seeded');
   })
   .catch(async (e) => {
     console.error(e);

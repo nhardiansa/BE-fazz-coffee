@@ -66,19 +66,19 @@ model VerifyResetToken {
 }
 
 model Products {
-  id                         Int            @id @default(autoincrement())
+  id                         Int                      @id @default(autoincrement())
   name                       String
   price                      Int
   description                String
-  productImage               String         @map("product_image")
-  deliveryMethod             DeliveryMethod @map("delivery_method")
+  productImage               String                   @map("product_image")
   type                       ProductType
   stock                      Int
-  deliveryAvailableTimeStart String         @map("delivery_available_time_start")
-  deliveryAvailableTimeEnd   String         @map("delivery_available_time_end")
-  createdAt                  DateTime?      @default(now()) @map("created_at")
-  updatedAt                  DateTime?      @updatedAt @map("updated_at")
+  deliveryAvailableTimeStart String                   @map("delivery_available_time_start")
+  deliveryAvailableTimeEnd   String                   @map("delivery_available_time_end")
+  createdAt                  DateTime?                @default(now()) @map("created_at")
+  updatedAt                  DateTime?                @updatedAt @map("updated_at")
   ProductSizes               ProductSizes[]
+  ProductDeliveryMethods     ProductDeliveryMethods[]
 
   @@map("products")
 }
@@ -106,6 +106,29 @@ model Sizes {
   @@map("sizes")
 }
 
+model ProductDeliveryMethods {
+  id               Int             @id @default(autoincrement())
+  productId        Int             @map("product_id")
+  product          Products        @relation(fields: [productId], references: [id])
+  deliveryMethodId Int             @map("delivery_method_id")
+  deliveryMethod   DeliveryMethods @relation(fields: [deliveryMethodId], references: [id])
+  createdAt        DateTime?       @default(now()) @map("created_at")
+  updatedAt        DateTime?       @updatedAt @map("updated_at")
+
+  @@map("product_delivery_methods")
+}
+
+model DeliveryMethods {
+  id                     Int                      @id @default(autoincrement())
+  name                   String                   @unique
+  slug                   String                   @unique
+  createdAt              DateTime?                @default(now()) @map("created_at")
+  updatedAt              DateTime?                @updatedAt @map("updated_at")
+  ProductDeliveryMethods ProductDeliveryMethods[]
+
+  @@map("delivery_methods")
+}
+
 enum Role {
   ADMIN
   CUSTOMER
@@ -114,12 +137,6 @@ enum Role {
 enum TokenType {
   VERIFY
   RESET
-}
-
-enum DeliveryMethod {
-  DELIVERY
-  DINE_IN
-  TAKEAWAY
 }
 
 enum ProductType {
